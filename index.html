@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0a0818" />
+  <title>Твой Дизайн</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ЭКРАН 1: Приветствие -->
+  <div id="screen-welcome" class="active">
+    <div class="hero-content">
+      <button class="btn-gold" onclick="showScreen('screen-form')">Начать расчёт</button>
+    </div>
+  </div>
+
+  <!-- ЭКРАН 2: Форма -->
+  <div id="screen-form">
+    <div class="form-wrap">
+      <h2>Данные рождения</h2>
+      <p class="form-hint">Чем точнее время — тем точнее расчёт</p>
+
+      <div class="field">
+        <label>Имя</label>
+        <input type="text" id="input-name" placeholder="Как тебя зовут?" />
+      </div>
+
+      <div class="field">
+        <label>Дата рождения</label>
+        <input type="date" id="input-date" />
+      </div>
+
+      <div class="field">
+        <label>Время рождения</label>
+        <input type="time" id="input-time" />
+        <span class="field-note">Если не знаешь — поставь 12:00</span>
+      </div>
+
+      <div class="field">
+        <label>Город рождения</label>
+        <input type="text" id="input-city" placeholder="Например: Москва" />
+      </div>
+
+      <button onclick="showScreen('screen-result')">Рассчитать →</button>
+      <button class="btn-back" onclick="showScreen('screen-welcome')">Назад</button>
+    </div>
+  </div>
+
+  <!-- ЭКРАН 3: Результат -->
+  <div id="screen-result">
+    <h2>Твой результат</h2>
+    <p>Здесь будет бодиграф</p>
+    <button class="btn-back" onclick="showScreen('screen-form')">Назад</button>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
