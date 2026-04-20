@@ -137,3 +137,9 @@ button::after {
       0 0 100px rgba(255, 200, 0, 0.3);
   }
 }
+/* ---- Экран формы ---- */
+#screen-form {
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
