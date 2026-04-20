@@ -289,6 +289,30 @@ button::after,
   justify-content: space-between;
   padding: 1rem 1.25rem 0.75rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 0.5rem;
+}
+
+.picker-header .btn-back {
+  width: auto !important;
+  min-width: 70px;
+  padding: 0.4rem 0.75rem !important;
+  font-size: 0.9rem !important;
+  margin: 0 !important;
+  flex-shrink: 0;
+}
+
+.picker-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+  flex: 1;
+  text-align: center;
+}
+
+.picker-done {
+  min-width: 60px;
+  text-align: right;
+  flex-shrink: 0;
 }
 
 .picker-title {
