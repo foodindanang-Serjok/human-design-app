@@ -209,3 +209,6 @@ button::after {
   font-weight: 400;
   font-size: 1rem;
 }
+#screen-form button:last-child::after {
+  display: none;
+}
