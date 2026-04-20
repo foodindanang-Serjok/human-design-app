@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Human Design — Твой Дизайн</title>
+  <meta name="description" content="Рассчитай свой бодиграф и получи персональные рекомендации по саморазвитию" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#6B5CE7" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Экран 1: Приветствие -->
+  <div id="screen-welcome" class="screen active">
+    <div class="hero">
+      <div class="logo">✦</div>
+      <h1>Твой Дизайн</h1>
+      <p class="subtitle">Узнай свой тип, стратегию и авторитет по системе Human Design</p>
+      <button class="btn-primary" onclick="showScreen('screen-form')">Начать расчёт</button>
+    </div>
+  </div>
+
+  <!-- Экран 2: Форма ввода -->
+  <div id="screen-form" class="screen">
+    <div class="container">
+      <button class="btn-back" onclick="showScreen('screen-welcome')">← Назад</button>
+      <h2>Данные рождения</h2>
+      <p class="hint">Чем точнее время — тем точнее расчёт</p>
+
+      <div class="form-group">
+        <label>Имя</label>
+        <input type="text" id="input-name" placeholder="Как тебя зовут?" />
+      </div>
+
+      <div class="form-group">
+        <label>Дата рождения</label>
+        <input type="date" id="input-date" />
+      </div>
+
+      <div class="form-group">
+        <label>Время рождения</label>
+        <input type="time" id="input-time" />
+        <span class="field-hint">Если не знаешь — поставь 12:00</span>
+      </div>
+
+      <div class="form-group">
+        <label>Место рождения</label>
+        <input type="text" id="input-city" placeholder="Город, страна" />
+      </div>
+
+      <button class="btn-primary" onclick="calculate()">Рассчитать бодиграф →</button>
+    </div>
+  </div>
+
+  <!-- Экран 3: Результат -->
+  <div id="screen-result" class="screen">
+    <div class="result-header">
+      <div class="result-name" id="result-name">Имя</div>
+      <div class="result-type" id="result-type">Тип</div>
+    </div>
+
+    <div class="container">
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-label">Тип</div>
+          <div class="card-value" id="res-type">—</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Стратегия</div>
+          <div class="card-value" id="res-strategy">—</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Авторитет</div>
+          <div class="card-value" id="res-authority">—</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Профиль</div>
+          <div class="card-value" id="res-profile">—</div>
+        </div>
+      </div>
+
+      <!-- Бодиграф SVG -->
+      <div class="bodygraph-wrapper">
+        <svg id="bodygraph-svg" viewBox="0 0 400 520" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+
+      <!-- Рекомендации -->
+      <div class="recommendations">
+        <h3>Рекомендации по саморазвитию</h3>
+        <div id="rec-text"></div>
+      </div>
+
+      <button class="btn-secondary" onclick="showScreen('screen-form')">← Новый расчёт</button>
+    </div>
+  </div>
+
+  <script src="js/ephemeris.js"></script>
+  <script src="js/bodygraph.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
