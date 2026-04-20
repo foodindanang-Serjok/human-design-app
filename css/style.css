@@ -116,7 +116,8 @@ div[id^="screen-"].active {
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 24px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 4px 32px rgba(255, 215, 0, 0.5);
+animation: glow 1.5s ease-in-out infinite alternate;
 }
 
 /* Блик — полоса света скользит по кнопке */
@@ -142,7 +143,15 @@ div[id^="screen-"].active {
   box-shadow: 0 4px 32px rgba(255, 215, 0, 0.5);
 }
 
-@keyframes shimmer {
-  0%   { left: -75%; }
-  100% { left: 125%; }
-}
+@keyframes glow {
+  from {
+    box-shadow:
+      0 4px 32px rgba(255, 215, 0, 0.5),
+      0 0 20px rgba(255, 215, 0, 0.3);
+  }
+  to {
+    box-shadow:
+      0 4px 48px rgba(255, 215, 0, 0.9),
+      0 0 60px rgba(255, 215, 0, 0.6),
+      0 0 100px rgba(255, 200, 0, 0.3);
+  }
