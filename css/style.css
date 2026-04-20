@@ -198,3 +198,14 @@ button::after {
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.4);
 }
+
+/* Кнопка Назад — без эффектов */
+#screen-form button:last-child {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.4);
+  box-shadow: none;
+  animation: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-weight: 400;
+  font-size: 1rem;
+}
