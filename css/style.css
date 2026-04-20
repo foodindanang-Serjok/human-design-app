@@ -1,0 +1,139 @@
+/* Убираем синюю подсветку при нажатии (iOS/Android) */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Правильные шрифты на всех устройствах */
+html {
+  -webkit-text-size-adjust: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, sans-serif;
+  background: #0a0818;
+  min-height: 100vh;
+  height: 100%;
+  color: white;
+  overscroll-behavior: none;
+}
+
+/* Все экраны скрыты по умолчанию */
+div[id^="screen-"] {
+  display: none;
+}
+
+/* Только экран с классом active — виден */
+div[id^="screen-"].active {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ---- Экран приветствия ---- */
+#screen-welcome {
+  align-items: center;
+  justify-content: flex-end;
+  text-align: center;
+  background-image: url('../hero.jpeg');
+  background-size: cover;
+  background-position: center top;
+  color: white;
+  padding: 0;
+  position: relative;
+}
+
+/* Тёмный градиент снизу */
+#screen-welcome::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 50%,
+    rgba(10, 8, 30, 0.95) 100%
+  );
+}
+
+/* Контент поверх градиента */
+#screen-welcome h1,
+#screen-welcome p,
+#screen-welcome button {
+  position: relative;
+  z-index: 1;
+}
+
+/* Блок с кнопкой */
+#screen-welcome .hero-content {
+  padding: 2rem 2rem calc(4rem + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+/* ---- Кнопка — золотая для всего приложения ---- */
+button {
+  background: linear-gradient(
+    135deg,
+    #b8860b 0%,
+    #ffd700 40%,
+    #fffacd 60%,
+    #ffd700 75%,
+    #b8860b 100%
+  );
+  color: #1a0e00;
+  border: none;
+  padding: 1.1rem 2.5rem;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: 80%;
+  margin-top: 1rem;
+  animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+/* Блик на кнопке */
+button::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -75%;
+  width: 50%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.35);
+  transform: skewX(-20deg);
+  animation: shimmer 2.5s infinite;
+}
+
+/* Анимация блика */
+@keyframes shimmer {
+  0%   { left: -75%; }
+  100% { left: 125%; }
+}
+
+/* Анимация свечения */
+@keyframes glow {
+  from {
+    box-shadow:
+      0 4px 32px rgba(255, 215, 0, 0.5),
+      0 0 20px rgba(255, 215, 0, 0.3);
+  }
+  to {
+    box-shadow:
+      0 4px 48px rgba(255, 215, 0, 0.9),
+      0 0 60px rgba(255, 215, 0, 0.6),
+      0 0 100px rgba(255, 200, 0, 0.3);
+  }
+}
