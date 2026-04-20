@@ -289,30 +289,6 @@ button::after,
   justify-content: space-between;
   padding: 1rem 1.25rem 0.75rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  gap: 0.5rem;
-}
-
-.picker-header .btn-back {
-  width: auto !important;
-  min-width: 70px;
-  padding: 0.4rem 0.75rem !important;
-  font-size: 0.9rem !important;
-  margin: 0 !important;
-  flex-shrink: 0;
-}
-
-.picker-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: white;
-  flex: 1;
-  text-align: center;
-}
-
-.picker-done {
-  min-width: 60px;
-  text-align: right;
-  flex-shrink: 0;
 }
 
 .picker-title {
@@ -373,4 +349,112 @@ button::after,
   color: white;
   font-size: 1.2rem;
   font-weight: 600;
+}
+
+/* ============================================================
+   ЭКРАН 3: РЕЗУЛЬТАТ
+   ============================================================ */
+#screen-result {
+  align-items: center;
+  padding-bottom: 2rem;
+}
+
+.result-wrap {
+  width: 100%;
+  max-width: 420px;
+  padding: 0 1.5rem 2rem;
+}
+
+.result-hero {
+  text-align: center;
+  padding: 2.5rem 1rem 1.5rem;
+}
+
+.result-name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.result-type-badge {
+  display: inline-block;
+  background: rgba(255, 215, 0, 0.15);
+  color: #ffd700;
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  padding: 0.3rem 1.2rem;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* Сетка карточек */
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.info-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+}
+
+.info-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #ffd700;
+  margin-bottom: 0.3rem;
+}
+
+.info-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  line-height: 1.4;
+}
+
+/* Рекомендации */
+.recommendations {
+  background: rgba(255, 215, 0, 0.05);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.recommendations h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffd700;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.rec-item {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+  align-items: flex-start;
+}
+
+.rec-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.rec-item p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
 }
