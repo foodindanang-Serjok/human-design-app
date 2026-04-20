@@ -56,19 +56,6 @@ div[id^="screen-"].active {
 /* Экран приветствия */
 #screen-welcome {
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  background-image: url('../hero.jpeg');
-  background-size: cover;
-  background-position: center top;
-  color: white;
-  padding: 2rem;
-  position: relative;
-}
-
-/* Тёмный оверлей поверх картинки */
-#screen-welcome {
-  align-items: center;
   justify-content: flex-end;
   text-align: center;
   background-image: url('../hero.jpeg');
