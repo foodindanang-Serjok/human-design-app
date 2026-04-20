@@ -1,5 +1,26 @@
 /* Сброс отступов у всех элементов */
+/* Убираем синюю подсветку при нажатии на кнопки (iOS/Android) */
 * {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Правильные шрифты и отступы на всех устройствах */
+html {
+  -webkit-text-size-adjust: 100%;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+/* Безопасная зона для iPhone с чёлкой */
+.hero-content {
+  padding-bottom: calc(12rem + env(safe-area-inset-bottom));
+}
+{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
