@@ -16,10 +16,10 @@
 
 body {
   font-family: -apple-system, sans-serif;
-  background: var(--bg);
+  background: #0a0818;
   min-height: 100vh;
+  color: white;
 }
-
 /* Все экраны скрыты по умолчанию */
 div[id^="screen-"] {
   display: none;
