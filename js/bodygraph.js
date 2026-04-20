@@ -89,7 +89,7 @@ const Bodygraph = {
     const persLine  = personalityGates.sun.line;
     const desLine   = designGates.sun.line;
 
-    var profiles = {
+    const profiles = {
   '1/3': 'Исследователь / Мученик',
   '1/4': 'Исследователь / Оппортунист',
   '2/4': 'Отшельник / Оппортунист',
