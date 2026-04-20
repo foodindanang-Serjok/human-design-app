@@ -97,7 +97,7 @@ div[id^="screen-"].active {
   max-width: 280px;
   margin: 0 0 1rem;
 }
-.btn-gold {
+button {
   background: linear-gradient(
     135deg,
     #b8860b 0%,
@@ -108,16 +108,18 @@ div[id^="screen-"].active {
   );
   color: #1a0e00;
   border: none;
-  padding: 1.1rem 3rem;
+  padding: 1rem 2.5rem;
   border-radius: 50px;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 700;
   letter-spacing: 1px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 32px rgba(255, 215, 0, 0.5);
-animation: glow 1.5s ease-in-out infinite alternate;
+  box-shadow: 0 4px 24px rgba(255, 215, 0, 0.4);
+  animation: glow 1.5s ease-in-out infinite alternate;
+  width: 100%;
+  margin-top: 1rem;
 }
 
 /* Блик — полоса света скользит по кнопке */
