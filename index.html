@@ -30,7 +30,6 @@
         <input type="text" id="input-name" placeholder="Как тебя зовут?" />
       </div>
 
-      <!-- Дата — барабан -->
       <div class="field">
         <label>Дата рождения</label>
         <div class="picker-trigger" onclick="openPicker('date')">
@@ -39,7 +38,6 @@
         </div>
       </div>
 
-      <!-- Время — барабан -->
       <div class="field">
         <label>Время рождения</label>
         <div class="picker-trigger" onclick="openPicker('time')">
@@ -61,9 +59,39 @@
 
   <!-- ЭКРАН 3: Результат -->
   <div id="screen-result">
-    <h2>Твой результат</h2>
-    <p>Здесь будет бодиграф</p>
-    <button class="btn-back" onclick="showScreen('screen-form')">Назад</button>
+    <div class="result-wrap">
+
+      <div class="result-hero">
+        <div class="result-name" id="res-name">Имя</div>
+        <div class="result-type-badge" id="res-type">Тип</div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="info-card">
+          <div class="info-label">Тип</div>
+          <div class="info-value" id="res-type"></div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">Авторитет</div>
+          <div class="info-value" id="res-authority"></div>
+        </div>
+        <div class="info-card full-width">
+          <div class="info-label">Стратегия</div>
+          <div class="info-value" id="res-strategy"></div>
+        </div>
+        <div class="info-card full-width">
+          <div class="info-label">Профиль</div>
+          <div class="info-value" id="res-profile"></div>
+        </div>
+      </div>
+
+      <div class="recommendations">
+        <h3>Рекомендации</h3>
+        <div id="rec-text"></div>
+      </div>
+
+      <button class="btn-back" onclick="showScreen('screen-form')">← Новый расчёт</button>
+    </div>
   </div>
 
   <!-- БАРАБАН: Дата -->
@@ -99,6 +127,8 @@
     </div>
   </div>
 
+  <script src="js/ephemeris.js"></script>
+  <script src="js/bodygraph.js"></script>
   <script src="js/app.js"></script>
   <script src="js/picker.js"></script>
 </body>
