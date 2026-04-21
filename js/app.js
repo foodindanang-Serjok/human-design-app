@@ -41,7 +41,6 @@ function showResult(name, result) {
   document.getElementById('res-name').textContent     = name;
   document.getElementById('res-type').textContent     = result.type;
   document.getElementById('res-strategy').textContent = result.strategy;
-  document.getElementById('res-authority').textContent = result.authority;
   document.getElementById('res-profile').textContent  = result.profile.code + ' — ' + result.profile.name;
 
   // Рекомендации
