@@ -105,9 +105,9 @@ const Bodygraph = {
 };
 
     const key = persLine + '/' + desLine;
-const name = profiles[key] || 'Профиль ' + key;
-return { code: key, name: name, persLine: persLine, desLine: desLine };
-
+    const name = profiles[key] || 'Профиль ' + key;
+    return { code: key, name: name, persLine: persLine, desLine: desLine };
+  },
   // ---- Уточнить авторитет по активным центрам ----
   getAuthority: function(activeCenters) {
     if (activeCenters.solar)  return 'Эмоциональный';
