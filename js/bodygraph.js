@@ -19,18 +19,44 @@ const Bodygraph = {
 
   // ---- Центры и какие ворота в них входят ----
   CENTERS: {
-    head:      { gates: [64, 61, 63], name: 'Голова' },
-    ajna:      { gates: [47, 24, 4, 17, 43, 11], name: 'Аджна' },
-    throat:    { gates: [62, 23, 56, 35, 12, 45, 33, 8, 31, 20, 16], name: 'Горло' },
-    gCenter:   { gates: [1, 2, 7, 10, 13, 15, 25, 46], name: 'G-центр' },
-    will:      { gates: [21, 26, 40, 51], name: 'Воля' },
-    solar:     { gates: [30, 36, 22, 37, 55, 49, 6], name: 'Солнечное сплетение' },
-    sacral:    { gates: [5, 14, 29, 59, 9, 3, 42, 27, 34], name: 'Сакральный' },
-    spleen:    { gates: [48, 57, 44, 50, 32, 28, 18], name: 'Селезёнка' },
-    root:      { gates: [53, 60, 52, 19, 39, 41, 58, 38, 54], name: 'Корень' }
+    head:    { gates: [64, 61, 63], name: 'Голова' },
+    ajna:    { gates: [47, 24, 4, 17, 43, 11], name: 'Аджна' },
+    throat:  { gates: [62, 23, 56, 35, 12, 45, 33, 8, 31, 20, 16], name: 'Горло' },
+    gCenter: { gates: [1, 2, 7, 10, 13, 15, 25, 46], name: 'G-центр' },
+    will:    { gates: [21, 26, 40, 51], name: 'Воля' },
+    solar:   { gates: [30, 36, 22, 37, 55, 49, 6], name: 'Солн. сплет.' },
+    sacral:  { gates: [5, 14, 29, 59, 9, 3, 42, 27, 34], name: 'Сакральный' },
+    spleen:  { gates: [48, 57, 44, 50, 32, 28, 18], name: 'Селезёнка' },
+    root:    { gates: [53, 60, 52, 19, 39, 41, 58, 38, 54], name: 'Корень' }
   },
 
-  // ---- Определить активированные ворота (объединение личности и дизайна) ----
+  // ---- Названия линий ----
+  LINES: {
+    1: 'Исследователь',
+    2: 'Отшельник',
+    3: 'Мученик',
+    4: 'Оппортунист',
+    5: 'Еретик',
+    6: 'Ролевая модель'
+  },
+
+  // ---- 12 профилей Human Design ----
+  PROFILES: {
+    '1/3': 'Исследователь / Мученик',
+    '1/4': 'Исследователь / Оппортунист',
+    '2/4': 'Отшельник / Оппортунист',
+    '2/5': 'Отшельник / Еретик',
+    '3/5': 'Мученик / Еретик',
+    '3/6': 'Мученик / Ролевая модель',
+    '4/6': 'Оппортунист / Ролевая модель',
+    '4/1': 'Оппортунист / Исследователь',
+    '5/1': 'Еретик / Исследователь',
+    '5/2': 'Еретик / Отшельник',
+    '6/2': 'Ролевая модель / Отшельник',
+    '6/3': 'Ролевая модель / Мученик'
+  },
+
+  // ---- Определить активированные ворота ----
   getActiveGates: function(personalityGates, designGates) {
     const active = new Set();
     for (const planet of Object.values(personalityGates)) active.add(planet.gate);
@@ -42,8 +68,7 @@ const Bodygraph = {
   getActiveCenters: function(activeGates) {
     const activeCenters = {};
     for (const [centerKey, center] of Object.entries(this.CENTERS)) {
-      const hasGate = center.gates.some(g => activeGates.has(g));
-      activeCenters[centerKey] = hasGate;
+      activeCenters[centerKey] = center.gates.some(g => activeGates.has(g));
     }
     return activeCenters;
   },
@@ -54,76 +79,44 @@ const Bodygraph = {
   },
 
   // ---- Определить тип по активным центрам ----
-  getType: function(activeCenters, activeChannels) {
+  getType: function(activeCenters) {
     const hasSacral = activeCenters.sacral;
     const hasThroat = activeCenters.throat;
     const hasMotor  = activeCenters.solar || activeCenters.will || activeCenters.root;
 
-    // Рефлектор — нет ни одного определённого центра
     const anyDefined = Object.values(activeCenters).some(v => v);
     if (!anyDefined) {
-      return { type: 'Рефлектор', strategy: 'Ждать лунный цикл (28 дней)', authority: 'Лунный' };
+      return { type: 'Рефлектор', strategy: 'Ждать лунный цикл (28 дней)' };
     }
-
-    // Манифестор — горло связано с мотором, но не с сакральным
     if (hasThroat && hasMotor && !hasSacral) {
-      return { type: 'Манифестор', strategy: 'Информировать перед действием', authority: 'Эго или эмоциональный' };
+      return { type: 'Манифестор', strategy: 'Информировать перед действием' };
     }
-
-    // Проектор — нет сакрального, нет прямой связи с горлом через мотор
     if (!hasSacral) {
-      return { type: 'Проектор', strategy: 'Ждать приглашения', authority: 'Ментальный / Лунный' };
+      return { type: 'Проектор', strategy: 'Ждать приглашения' };
     }
-
-    // Манифестирующий генератор — сакральный И горло связаны
     if (hasSacral && hasThroat) {
-      return { type: 'Манифестирующий Генератор', strategy: 'Реагировать, затем информировать', authority: 'Сакральный или эмоциональный' };
+      return { type: 'Манифестирующий Генератор', strategy: 'Реагировать, затем информировать' };
     }
-
-    // Генератор — сакральный центр определён
-    return { type: 'Генератор', strategy: 'Ждать и реагировать', authority: 'Сакральный или эмоциональный' };
+    return { type: 'Генератор', strategy: 'Ждать и реагировать' };
   },
 
-  // ---- Определить профиль (линии Солнца в личности и дизайне) ----
+  // ---- Определить профиль ----
   getProfile: function(personalityGates, designGates) {
-    const persLine  = personalityGates.sun.line;
-    const desLine   = designGates.sun.line;
-
-    const profiles = {
-  '1/3': 'Исследователь / Мученик',
-  '1/4': 'Исследователь / Оппортунист',
-  '2/4': 'Отшельник / Оппортунист',
-  '2/5': 'Отшельник / Еретик',
-  '3/5': 'Мученик / Еретик',
-  '3/6': 'Мученик / Ролевая модель',
-  '4/6': 'Оппортунист / Ролевая модель',
-  '4/1': 'Оппортунист / Исследователь',
-  '5/1': 'Еретик / Исследователь',
-  '5/2': 'Еретик / Отшельник',
-  '6/2': 'Ролевая модель / Отшельник',
-  '6/3': 'Ролевая модель / Мученик'
-};
-
-    const LINES = {
-  1: 'Исследователь',
-  2: 'Отшельник',
-  3: 'Мученик',
-  4: 'Оппортунист',
-  5: 'Еретик',
-  6: 'Ролевая модель'
-};
-
-const key = persLine + '/' + desLine;
-const name = profiles[key] || (LINES[persLine] + ' / ' + LINES[desLine]);
-return { code: key, name: name, persLine: persLine, desLine: desLine };
+    const persLine = personalityGates.sun.line;
+    const desLine  = designGates.sun.line;
+    const key      = persLine + '/' + desLine;
+    const name     = this.PROFILES[key] ||
+                     (this.LINES[persLine] || persLine) + ' / ' + (this.LINES[desLine] || desLine);
+    return { code: key, name: name, persLine: persLine, desLine: desLine };
   },
+
   // ---- Уточнить авторитет по активным центрам ----
   getAuthority: function(activeCenters) {
-    if (activeCenters.solar)  return 'Эмоциональный';
-    if (activeCenters.sacral) return 'Сакральный';
-    if (activeCenters.spleen) return 'Интуитивный (Селезёнка)';
-    if (activeCenters.will)   return 'Эго (Воля)';
-    if (activeCenters.gCenter) return 'G-центр (Самость)';
+    if (activeCenters.solar)   return 'Эмоциональный';
+    if (activeCenters.sacral)  return 'Сакральный';
+    if (activeCenters.spleen)  return 'Интуитивный';
+    if (activeCenters.will)    return 'Эго (Воля)';
+    if (activeCenters.gCenter) return 'G-центр';
     return 'Ментальный / Лунный';
   },
 
@@ -134,58 +127,49 @@ return { code: key, name: name, persLine: persLine, desLine: desLine };
     const personalityPlanets = Ephemeris.getAllPlanets(birthDate);
     const designPlanets      = Ephemeris.getAllPlanets(designDate);
 
-    const personalityGates   = Ephemeris.getGatesForPlanets(personalityPlanets);
-    const designGates        = Ephemeris.getGatesForPlanets(designPlanets);
+    const personalityGates = Ephemeris.getGatesForPlanets(personalityPlanets);
+    const designGates      = Ephemeris.getGatesForPlanets(designPlanets);
 
     const activeGates    = this.getActiveGates(personalityGates, designGates);
     const activeCenters  = this.getActiveCenters(activeGates);
     const activeChannels = this.getActiveChannels(activeGates);
-
-    const typeData    = this.getType(activeCenters, activeChannels);
-    const profile     = this.getProfile(personalityGates, designGates);
-    const authority   = this.getAuthority(activeCenters);
+    const typeData       = this.getType(activeCenters);
+    const profile        = this.getProfile(personalityGates, designGates);
+    const authority      = this.getAuthority(activeCenters);
 
     return {
-      type:         typeData.type,
-      strategy:     typeData.strategy,
-      authority:    authority,
-      profile:      profile,
-      activeCenters: activeCenters,
-      activeGates:  activeGates,
-      activeChannels: activeChannels,
+      type:             typeData.type,
+      strategy:         typeData.strategy,
+      authority:        authority,
+      profile:          profile,
+      activeCenters:    activeCenters,
+      activeGates:      activeGates,
+      activeChannels:   activeChannels,
       personalityGates: personalityGates,
-      designGates: designGates
+      designGates:      designGates
     };
   },
 
   // ============================================================
-  // SVG бодиграф — координаты центров
+  // SVG бодиграф
   // ============================================================
   CENTER_COORDS: {
-    head:      { x: 200, y: 40,  w: 60, h: 50, shape: 'triangle' },
-    ajna:      { x: 200, y: 115, w: 60, h: 50, shape: 'triangle' },
-    throat:    { x: 200, y: 195, w: 80, h: 40, shape: 'rect' },
-    gCenter:   { x: 200, y: 275, w: 60, h: 60, shape: 'diamond' },
-    will:      { x: 290, y: 255, w: 50, h: 50, shape: 'triangle' },
-    solar:     { x: 290, y: 340, w: 60, h: 50, shape: 'triangle' },
-    sacral:    { x: 200, y: 365, w: 80, h: 40, shape: 'rect' },
-    spleen:    { x: 110, y: 255, w: 50, h: 50, shape: 'triangle' },
-    root:      { x: 200, y: 445, w: 80, h: 40, shape: 'rect' }
+    head:    { x: 200, y: 40,  w: 60, h: 50, shape: 'triangle' },
+    ajna:    { x: 200, y: 115, w: 60, h: 50, shape: 'triangle' },
+    throat:  { x: 200, y: 195, w: 80, h: 40, shape: 'rect' },
+    gCenter: { x: 200, y: 275, w: 60, h: 60, shape: 'diamond' },
+    will:    { x: 290, y: 255, w: 50, h: 50, shape: 'triangle' },
+    solar:   { x: 290, y: 340, w: 60, h: 50, shape: 'triangle' },
+    sacral:  { x: 200, y: 365, w: 80, h: 40, shape: 'rect' },
+    spleen:  { x: 110, y: 255, w: 50, h: 50, shape: 'triangle' },
+    root:    { x: 200, y: 445, w: 80, h: 40, shape: 'rect' }
   },
 
   drawSVG: function(result) {
     const svg = document.getElementById('bodygraph-svg');
+    if (!svg) return;
     svg.innerHTML = '';
 
-    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    defs.innerHTML = `
-      <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
-        <path d="M 0 0 L 10 5 L 0 10 z" fill="#C4B5FD"/>
-      </marker>
-    `;
-    svg.appendChild(defs);
-
-    // Соединительные линии между центрами
     const connections = [
       ['head', 'ajna'], ['ajna', 'throat'], ['throat', 'gCenter'],
       ['gCenter', 'sacral'], ['sacral', 'root'],
@@ -203,20 +187,18 @@ return { code: key, name: name, persLine: persLine, desLine: desLine };
       line.setAttribute('y1', ca.y);
       line.setAttribute('x2', cb.x);
       line.setAttribute('y2', cb.y);
-      line.setAttribute('stroke', '#E0DEFA');
+      line.setAttribute('stroke', 'rgba(255,215,0,0.2)');
       line.setAttribute('stroke-width', '6');
       line.setAttribute('stroke-linecap', 'round');
       svg.appendChild(line);
     });
 
-    // Рисуем центры
     for (const [key, coords] of Object.entries(this.CENTER_COORDS)) {
-      const isActive = result.activeCenters[key];
-      const fill     = isActive ? '#6B5CE7' : '#F0EEFF';
-      const stroke   = isActive ? '#4C3ECC' : '#D0CAFF';
-      const textColor = isActive ? '#FFFFFF' : '#9B8FD0';
+      const isActive   = result.activeCenters[key];
+      const fill       = isActive ? 'rgba(255,215,0,0.9)' : 'rgba(255,255,255,0.05)';
+      const stroke     = isActive ? '#ffd700' : 'rgba(255,215,0,0.2)';
+      const textColor  = isActive ? '#1a0e00' : 'rgba(255,255,255,0.3)';
       const centerName = this.CENTERS[key].name;
-
       const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 
       if (coords.shape === 'rect') {
@@ -249,23 +231,11 @@ return { code: key, name: name, persLine: persLine, desLine: desLine };
         const hh = coords.h / 2;
         let points;
         if (coords.x > 220) {
-          points = [
-            coords.x + ',' + (coords.y - hh),
-            (coords.x + hw) + ',' + (coords.y + hh),
-            (coords.x - hw) + ',' + (coords.y + hh)
-          ].join(' ');
+          points = [coords.x+','+(coords.y-hh), (coords.x+hw)+','+(coords.y+hh), (coords.x-hw)+','+(coords.y+hh)].join(' ');
         } else if (coords.x < 180) {
-          points = [
-            coords.x + ',' + (coords.y + hh),
-            (coords.x - hw) + ',' + (coords.y - hh),
-            (coords.x + hw) + ',' + (coords.y - hh)
-          ].join(' ');
+          points = [coords.x+','+(coords.y+hh), (coords.x-hw)+','+(coords.y-hh), (coords.x+hw)+','+(coords.y-hh)].join(' ');
         } else {
-          points = [
-            coords.x + ',' + (coords.y - hh),
-            (coords.x + hw) + ',' + (coords.y + hh),
-            (coords.x - hw) + ',' + (coords.y + hh)
-          ].join(' ');
+          points = [coords.x+','+(coords.y-hh), (coords.x+hw)+','+(coords.y+hh), (coords.x-hw)+','+(coords.y+hh)].join(' ');
         }
         const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
         poly.setAttribute('points', points);
@@ -275,7 +245,6 @@ return { code: key, name: name, persLine: persLine, desLine: desLine };
         g.appendChild(poly);
       }
 
-      // Подпись центра
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       text.setAttribute('x', coords.x);
       text.setAttribute('y', coords.y + 4);
@@ -286,7 +255,6 @@ return { code: key, name: name, persLine: persLine, desLine: desLine };
       text.setAttribute('font-weight', isActive ? '700' : '400');
       text.textContent = centerName;
       g.appendChild(text);
-
       svg.appendChild(g);
     }
   }
