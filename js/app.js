@@ -36,13 +36,6 @@ var utcDate = new Date(Date.UTC(selectedYear, selectedMonth-1, selectedDay, sele
 
     var result = Bodygraph.calculate(utcDate);
 
-// Временная отладка — показываем ворота на экране
-var debugDiv = document.createElement('div');
-debugDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#000;color:#0f0;font-size:11px;padding:8px;z-index:9999;overflow:auto;max-height:40vh;';
-debugDiv.innerHTML = '<b>Центры:</b> ' + JSON.stringify(result.activeCenters) + '<br><b>Ворота:</b> ' + Array.from(result.activeGates).sort(function(a,b){return a-b;}).join(', ');
-document.body.appendChild(debugDiv);
-    console.log('Активные центры:', JSON.stringify(result.activeCenters));
-console.log('Активные ворота:', Array.from(result.activeGates).sort((a,b)=>a-b).join(', '));
     showResult(name, result);
     showScreen('screen-result');
   } catch(e) {
