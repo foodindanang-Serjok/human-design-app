@@ -48,9 +48,12 @@
       </div>
 
       <div class="field">
-        <label>Город рождения</label>
-        <input type="text" id="input-city" placeholder="Например: Москва" />
-      </div>
+  <label>Город рождения</label>
+  <div class="city-wrapper">
+    <input type="text" id="input-city" placeholder="Например: Москва" autocomplete="off" />
+    <div id="cities-list"></div>
+  </div>
+</div>
 
       <button onclick="calculate()">Рассчитать →</button>
       <button class="btn-back" onclick="showScreen('screen-welcome')">Назад</button>
