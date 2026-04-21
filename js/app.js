@@ -31,9 +31,8 @@ async function calculate() {
     // Инициализируем Swiss Ephemeris если ещё не загружен
     await Ephemeris.init();
 
-    // Местное время → UTC
-    var localDate = new Date(selectedYear, selectedMonth-1, selectedDay, selectedHour, selectedMin, 0);
-    var utcDate   = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
+   // Пользователь вводит местное время — переводим в UTC
+var utcDate = new Date(Date.UTC(selectedYear, selectedMonth-1, selectedDay, selectedHour, selectedMin, 0));
 
     var result = Bodygraph.calculate(utcDate);
     showResult(name, result);
