@@ -1,108 +1,60 @@
 // ============================================================
-// ephemeris.js — Swiss Ephemeris через динамический import
+// ephemeris.js — расчёт позиций планет через таблицу эфемерид
+// Данные: planets_table.js (1920-2050, шаг 1 день, точность 0.1°)
 // ============================================================
 
 const Ephemeris = {
 
-  swe: null,
-  ready: false,
-  initPromise: null,
+  // Инициализация — просто заглушка для совместимости
+  init: async function() { return; },
 
-  init: async function() {
-    if (this.ready) return;
-    if (this.initPromise) return this.initPromise;
+  norm360: function(a) { return ((a % 360) + 360) % 360; },
 
-    this.initPromise = (async () => {
-      try {
-        const mod = await import('./swisseph.js');
-        const SwissEph = mod.default;
-        this.swe = new SwissEph();
-        await this.swe.initSwissEph();
-        this.ready = true;
-        console.log('Swiss Ephemeris загружен!');
-      } catch(e) {
-        console.warn('Swiss Ephemeris недоступен, используем упрощённый расчёт:', e.message);
-        this.ready = false;
-      }
-    })();
-
-    return this.initPromise;
-  },
-
-  norm360: function(a) {
-    return ((a % 360) + 360) % 360;
-  },
-
-  // Позиции планет через Swiss Ephemeris или fallback
+  // Получить позиции всех планет по дате
   getAllPlanets: function(date) {
-    const y = date.getUTCFullYear();
-    const m = date.getUTCMonth() + 1;
-    const d = date.getUTCDate();
-    const h = date.getUTCHours() + date.getUTCMinutes() / 60;
+    const jd = this._toJD(date);
+    const idx = this._jdToIdx(jd);
+    const frac = (jd - (EPH_START_JD + idx * EPH_STEP)) / EPH_STEP;
 
-    if (this.ready && this.swe) {
-      return this._getPlanetsSWE(y, m, d, h);
-    } else {
-      return this._getPlanetsFallback(date);
-    }
-  },
-
-  _getPlanetsSWE: function(y, m, d, h) {
-    const swe = this.swe;
-    const jd = swe.julday(y, m, d, h);
-    const PLANET_IDS = { sun:0, moon:1, mercury:2, venus:3, mars:4,
-                         jupiter:5, saturn:6, uranus:7, neptune:8, pluto:9 };
+    const NAMES = ['sun','moon','mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto'];
     const result = {};
-    for (const [name, id] of Object.entries(PLANET_IDS)) {
-      try {
-        const pos = swe.calc_ut(jd, id, 2);
-        result[name] = this.norm360(pos[0]);
-      } catch(e) {
-        result[name] = 0;
+
+    for (let p = 0; p < 10; p++) {
+      let val = ephGet(p, idx);
+      // Линейная интерполяция между днями для точности
+      if (idx < EPH_ROWS - 1) {
+        const next = ephGet(p, idx + 1);
+        let diff = next - val;
+        if (diff > 180) diff -= 360;
+        if (diff < -180) diff += 360;
+        val = this.norm360(val + diff * frac);
       }
+      result[NAMES[p]] = val;
     }
     return result;
   },
 
-  // Fallback — упрощённый алгоритм
-  _getPlanetsFallback: function(date) {
-    const jd = this._toJD(date);
-    const T = (jd - 2451545.0) / 36525;
-    const norm = this.norm360.bind(this);
-    const pl = (L0,L1,M0,M1,C1,C2) => {
-      const L=L0+L1*T, M=M0+M1*T, Mrad=M*Math.PI/180;
-      return norm(L + C1*Math.sin(Mrad) + C2*Math.sin(2*Mrad));
-    };
-    const L0=280.46646+36000.76983*T;
-    const M=357.52911+35999.05029*T;
-    const Mrad=M*Math.PI/180;
-    const C=(1.914602-0.004817*T)*Math.sin(Mrad)+(0.019993-0.000101*T)*Math.sin(2*Mrad);
-    const sun=norm(L0+C);
-    const moonL=218.3165+481267.8813*T;
-    const moonM=134.9634+477198.8676*T;
-    const moonMrad=moonM*Math.PI/180;
-    const moonLrad=moonL*Math.PI/180;
-    const moon=norm(moonL+6.2886*Math.sin(moonMrad)+1.274*Math.sin(2*moonLrad-moonMrad));
-    return {
-      sun, moon,
-      mercury: pl(252.2509,149472.6749,174.7948,149472.5153,6.5526,0.85),
-      venus:   pl(181.9798,58517.8157,212.2606,58517.8036,0.7758,0.0033),
-      mars:    pl(355.433,19140.2993,19.373,19140.303,10.6912,0.6228),
-      jupiter: pl(34.3515,3034.9057,20.9275,3034.9057,5.5549,0.1683),
-      saturn:  pl(50.0774,1222.1138,317.021,1222.1138,6.3585,0.2204),
-      uranus:  pl(314.055,428.4665,142.5905,428.4665,5.3042,0.1534),
-      neptune: pl(304.3487,218.4862,259.8835,218.4862,1.0302,0.0118),
-      pluto:   pl(238.929,145.2078,14.882,145.2078,28.315,4.3408)
-    };
-  },
-
+  // Юлианский день
   _toJD: function(date) {
-    const y=date.getUTCFullYear(), m=date.getUTCMonth()+1;
-    const d=date.getUTCDate(), h=date.getUTCHours()+date.getUTCMinutes()/60;
-    return 367*y-Math.floor(7*(y+Math.floor((m+9)/12))/4)+Math.floor(275*m/9)+d+1721013.5+h/24;
+    let y = date.getUTCFullYear();
+    let m = date.getUTCMonth() + 1;
+    const d = date.getUTCDate();
+    const h = date.getUTCHours() + date.getUTCMinutes() / 60;
+    if (m <= 2) { y--; m += 12; }
+    const A = Math.floor(y / 100);
+    const B = 2 - A + Math.floor(A / 4);
+    return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + h / 24 + B - 1524.5;
   },
 
-  // Точная таблица ворот HD
+  // Индекс в таблице
+  _jdToIdx: function(jd) {
+    const idx = Math.floor((jd - EPH_START_JD) / EPH_STEP);
+    return Math.max(0, Math.min(idx, EPH_ROWS - 2));
+  },
+
+  // ============================================================
+  // Точная таблица ворот HD по градусам зодиака
+  // ============================================================
   GATE_TABLE: [
     [17,3.875],[21,9.5],[51,15.125],[42,20.75],[3,26.375],
     [27,32],[24,37.625],[2,43.25],[23,48.875],[8,54.5],
@@ -141,13 +93,13 @@ const Ephemeris = {
     return result;
   },
 
+  // Дата дизайна = Солнце на 88° раньше
   getDesignDate: function(birthDate) {
-    // Получаем позицию Солнца при рождении
     const birthPlanets = this.getAllPlanets(birthDate);
     const birthSun = birthPlanets.sun;
     const targetSun = this.norm360(birthSun - 88);
 
-    // Бинарный поиск даты когда Солнце было на 88° раньше
+    // Бинарный поиск
     let lo = new Date(birthDate.getTime() - 95 * 86400000);
     let hi = new Date(birthDate.getTime() - 80 * 86400000);
 
@@ -159,7 +111,6 @@ const Ephemeris = {
       if (diff < -180) diff += 360;
       if (diff > 0) hi = mid; else lo = mid;
     }
-
     return new Date((lo.getTime() + hi.getTime()) / 2);
   }
 };
