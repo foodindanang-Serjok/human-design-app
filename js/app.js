@@ -26,7 +26,11 @@ function calculate() {
   }
 
   // Собираем дату
-  var birthDate = new Date(Date.UTC(year, month - 1, day, hour, min, 0));
+  // Губкин UTC+3, но пользователь вводит местное время
+// Переводим в UTC вычитая смещение часового пояса
+var tzOffset = new Date().getTimezoneOffset(); // в минутах
+var birthDate = new Date(Date.UTC(year, month - 1, day, hour, min, 0));
+birthDate = new Date(birthDate.getTime() + tzOffset * 60 * 1000);
 
   // Запускаем расчёт Human Design
   var result = Bodygraph.calculate(birthDate);
