@@ -1,3 +1,7 @@
+// ============================================================
+// app.js — логика приложения с Claude API
+// ============================================================
+
 // Переключение экранов
 function showScreen(id) {
   document.querySelectorAll('[id^="screen-"]').forEach(function(screen) {
@@ -7,45 +11,88 @@ function showScreen(id) {
   window.scrollTo(0, 0);
 }
 
-// Главная функция расчёта
-function calculate() {
-  var name = document.getElementById('input-name').value.trim() || 'Пользователь';
-  var city = document.getElementById('input-city').value.trim();
-
-  // Берём дату и время из барабана
- var day   = selectedDay;
-var month = selectedMonth;
-var year  = selectedYear;
-var hour  = selectedHour;
-var min   = selectedMin;
-
-if (!day || !month || !year) {
-  alert('Пожалуйста, выбери дату рождения');
-  return;
+// Показать/скрыть загрузку
+function showLoading(show) {
+  document.getElementById('screen-loading').style.display = show ? 'flex' : 'none';
+  document.getElementById('screen-form').style.display = show ? 'none' : 'flex';
 }
 
-// Пользователь вводит МЕСТНОЕ время рождения
-// Нужно перевести в UTC: вычитаем текущее смещение браузера
-// Это работает правильно если пользователь находится
-// в том же часовом поясе где родился
-var localOffset = new Date().getTimezoneOffset(); // минуты до UTC
-var birthDate = new Date(year, month - 1, day, hour, min, 0);
-// Корректируем: создаём UTC дату с учётом локального времени
-var birthUTC = new Date(Date.UTC(
-  birthDate.getFullYear(),
-  birthDate.getMonth(),
-  birthDate.getDate(),
-  birthDate.getHours() + (localOffset / 60),
-  birthDate.getMinutes()
-));
-var birthDate = birthUTC;
+// Главная функция расчёта
+async function calculate() {
+  var name = document.getElementById('input-name').value.trim() || 'Пользователь';
+  var city = document.getElementById('input-city').value.trim() || 'не указан';
+  var day   = selectedDay;
+  var month = selectedMonth;
+  var year  = selectedYear;
+  var hour  = selectedHour;
+  var min   = selectedMin;
 
-  // Запускаем расчёт Human Design
-  var result = Bodygraph.calculate(birthDate);
+  if (!day || !month || !year) {
+    alert('Пожалуйста, выбери дату рождения');
+    return;
+  }
 
-  // Показываем результат
-  showResult(name, result);
-  showScreen('screen-result');
+  var monthNames = ['января','февраля','марта','апреля','мая','июня',
+                    'июля','августа','сентября','октября','ноября','декабря'];
+  var birthStr = day + ' ' + monthNames[month-1] + ' ' + year + ' года, ' +
+                 String(hour).padStart(2,'0') + ':' + String(min).padStart(2,'0') +
+                 ', город: ' + city;
+
+  // Показываем загрузку
+  showLoading(true);
+
+  try {
+    var result = await askClaude(name, birthStr);
+    showResult(name, result);
+    showScreen('screen-result');
+  } catch(e) {
+    alert('Ошибка расчёта. Проверь подключение к интернету.');
+    console.error(e);
+  } finally {
+    showLoading(false);
+  }
+}
+
+// Запрос к Claude API
+async function askClaude(name, birthStr) {
+  var prompt = 'Ты эксперт по системе Human Design. Рассчитай карту для человека:\n' +
+    'Имя: ' + name + '\n' +
+    'Дата и время рождения: ' + birthStr + '\n\n' +
+    'Используй точные швейцарские эфемериды (Swiss Ephemeris).\n' +
+    'Учти часовой пояс по городу рождения.\n\n' +
+    'Ответь СТРОГО в формате JSON без лишнего текста:\n' +
+    '{\n' +
+    '  "type": "тип (Генератор/Манифестирующий Генератор/Проектор/Манифестор/Рефлектор)",\n' +
+    '  "profile": "профиль например 6/2",\n' +
+    '  "profile_name": "название профиля например Ролевая модель / Отшельник",\n' +
+    '  "strategy": "стратегия",\n' +
+    '  "authority": "авторитет",\n' +
+    '  "sun_personality": "ворота и линия Солнца личности например 46.2",\n' +
+    '  "sun_design": "ворота и линия Солнца дизайна например 25.4",\n' +
+    '  "recommendations": [\n' +
+    '    "персональная рекомендация 1",\n' +
+    '    "персональная рекомендация 2",\n' +
+    '    "персональная рекомендация 3",\n' +
+    '    "персональная рекомендация 4"\n' +
+    '  ]\n' +
+    '}';
+
+  var response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+
+  var data = await response.json();
+  var text = data.content[0].text;
+
+  // Убираем markdown если есть
+  text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+  return JSON.parse(text);
 }
 
 // Заполняем экран результата
@@ -53,68 +100,24 @@ function showResult(name, result) {
   document.getElementById('res-name').textContent     = name;
   document.getElementById('res-type').textContent     = result.type;
   document.getElementById('res-strategy').textContent = result.strategy;
-  document.getElementById('res-profile').textContent = result.profile.code + ' — ' + result.profile.name;
+  document.getElementById('res-authority').textContent = result.authority;
+  document.getElementById('res-profile').textContent  =
+    result.profile + ' — ' + result.profile_name;
 
-  // Рекомендации
-  var recs = RECOMMENDATIONS[result.type] || RECOMMENDATIONS['Генератор'];
-  var persLine = String(result.profile.persLine);
-  var profileTip = PROFILE_TIPS[persLine] || '';
-
-  var html = recs.map(function(r) {
-    return '<div class="rec-item"><span class="rec-icon">' + r.icon + '</span><p>' + r.text + '</p></div>';
-  }).join('');
-
-  if (profileTip) {
-    html += '<div class="rec-item"><span class="rec-icon">📌</span><p><strong>Профиль ' +
-      result.profile.code + ':</strong> ' + profileTip + '</p></div>';
+  // Рекомендации от Claude
+  var html = '';
+  var icons = ['⚡','🎯','🌙','💡','🔮','🌿'];
+  if (result.recommendations && result.recommendations.length) {
+    result.recommendations.forEach(function(rec, i) {
+      html += '<div class="rec-item">' +
+        '<span class="rec-icon">' + (icons[i] || '✦') + '</span>' +
+        '<p>' + rec + '</p>' +
+        '</div>';
+    });
   }
 
   document.getElementById('rec-text').innerHTML = html;
 }
-
-// ---- Рекомендации по типам ----
-var RECOMMENDATIONS = {
-  'Генератор': [
-    { icon: '⚡', text: 'Твоя сила — в реакции. Не начинай первым, жди когда жизнь позовёт тебя. Физический отклик в теле важнее умственного решения.' },
-    { icon: '🔋', text: 'Занимайся только тем, что вызывает внутренний отклик. Работа без удовлетворения истощает сакральный центр.' },
-    { icon: '🌙', text: 'Ложись спать только когда устал физически. Усталость без полного расслабления тела не даёт восстановиться.' },
-    { icon: '🎯', text: 'Задавай себе вопросы на которые можно ответить "да" или "нет". Тело знает ответ раньше головы.' }
-  ],
-  'Манифестирующий Генератор': [
-    { icon: '⚡', text: 'Ты можешь делать несколько дел одновременно — это твоя суперсила, а не разбросанность.' },
-    { icon: '🚀', text: 'Реагируй на возможности, затем сообщай окружающим о своих намерениях. Это снизит сопротивление.' },
-    { icon: '🔄', text: 'Пробовать и менять направление — нормально для тебя. Ты учишься через опыт, не через теорию.' },
-    { icon: '💡', text: 'Пропускай лишние шаги в процессах. Твоя интуиция видит короткий путь — доверяй ей.' }
-  ],
-  'Проектор': [
-    { icon: '👁', text: 'Ты создан чтобы видеть суть в людях и процессах. Не трать энергию на тех, кто не просит твоего руководства.' },
-    { icon: '✉️', text: 'Жди приглашения прежде чем давать советы. Непрошеный совет — даже гениальный — не будет услышан.' },
-    { icon: '😴', text: 'Ложись спать до наступления усталости. Ты поглощаешь чужую энергию за день и нуждаешься в тишине.' },
-    { icon: '🏆', text: 'Твоё признание приходит через глубокое знание. Специализируйся, изучай одну тему так, чтобы стать незаменимым.' }
-  ],
-  'Манифестор': [
-    { icon: '🔥', text: 'Ты рождён начинать. Но прежде чем действовать — информируй тех, кого это затронет.' },
-    { icon: '🕊', text: 'Тебе нужна свобода и независимость. Не позволяй другим управлять твоим расписанием без необходимости.' },
-    { icon: '💤', text: 'Ложись спать раньше других, даже если не устал. Твоему телу нужен изолированный отдых.' },
-    { icon: '⚠️', text: 'Следи за гневом — это сигнал что тебя контролируют или ограничивают.' }
-  ],
-  'Рефлектор': [
-    { icon: '🌕', text: 'Не принимай важных решений в моменте. Подожди полный лунный цикл (28 дней) — картина прояснится.' },
-    { icon: '🌍', text: 'Ты зеркало мира вокруг. Окружение имеет для тебя решающее значение — выбирай людей и места осознанно.' },
-    { icon: '🔮', text: 'У тебя нет постоянных центров. Это дар — ты видишь мир объективно, без фиксированных фильтров.' },
-    { icon: '🌿', text: 'Выходи на природу регулярно. Тишина и одиночество помогают очиститься от чужих энергий.' }
-  ]
-};
-
-// ---- Профильные рекомендации ----
-var PROFILE_TIPS = {
-  '1': 'Исследователь — тебе важна прочная база. Изучи тему до конца прежде чем действовать.',
-  '2': 'Отшельник — тебе нужно время в одиночестве. Не игнорируй потребность в уединении.',
-  '3': 'Мученик — ты учишься через ошибки. Каждый провал это данные, а не поражение.',
-  '4': 'Оппортунист — твои возможности приходят через людей. Инвестируй в отношения.',
-  '5': 'Еретик — другие видят в тебе решение своих проблем. Управляй ожиданиями.',
-  '6': 'Ролевая модель — твоя жизнь делится на три фазы. До 30 ты экспериментируешь, до 50 наблюдаешь, после 50 становишься образцом для других.'
-};
 
 // PWA: регистрация Service Worker
 if ('serviceWorker' in navigator) {
