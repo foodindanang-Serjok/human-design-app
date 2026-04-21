@@ -23,7 +23,6 @@ body {
   overscroll-behavior: none;
 }
 
-/* Все экраны скрыты по умолчанию */
 div[id^="screen-"] {
   display: none;
 }
@@ -53,11 +52,7 @@ div[id^="screen-"].active {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0) 50%,
-    rgba(10, 8, 30, 0.95) 100%
-  );
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(10,8,30,0.95) 100%);
 }
 
 #screen-welcome .hero-content {
@@ -73,18 +68,9 @@ div[id^="screen-"].active {
 /* ============================================================
    КНОПКИ
    ============================================================ */
-
-/* Золотая кнопка — основная */
 button,
 .btn-gold {
-  background: linear-gradient(
-    135deg,
-    #b8860b 0%,
-    #ffd700 40%,
-    #fffacd 60%,
-    #ffd700 75%,
-    #b8860b 100%
-  );
+  background: linear-gradient(135deg, #b8860b 0%, #ffd700 40%, #fffacd 60%, #ffd700 75%, #b8860b 100%);
   color: #1a0e00;
   border: none;
   padding: 1.1rem 2.5rem;
@@ -101,7 +87,6 @@ button,
   display: block;
 }
 
-/* Блик */
 button::after,
 .btn-gold::after {
   content: '';
@@ -110,7 +95,7 @@ button::after,
   left: -75%;
   width: 50%;
   height: 200%;
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(255,255,255,0.35);
   transform: skewX(-20deg);
   animation: shimmer 2.5s infinite;
 }
@@ -121,26 +106,17 @@ button::after,
 }
 
 @keyframes glow {
-  from {
-    box-shadow:
-      0 4px 32px rgba(255, 215, 0, 0.5),
-      0 0 20px rgba(255, 215, 0, 0.3);
-  }
-  to {
-    box-shadow:
-      0 4px 48px rgba(255, 215, 0, 0.9),
-      0 0 60px rgba(255, 215, 0, 0.6),
-      0 0 100px rgba(255, 200, 0, 0.3);
-  }
+  from { box-shadow: 0 4px 32px rgba(255,215,0,0.5), 0 0 20px rgba(255,215,0,0.3); }
+  to   { box-shadow: 0 4px 48px rgba(255,215,0,0.9), 0 0 60px rgba(255,215,0,0.6), 0 0 100px rgba(255,200,0,0.3); }
 }
 
-/* Кнопка НАЗАД — без эффектов */
+/* Кнопка НАЗАД */
 .btn-back {
   background: transparent !important;
-  color: rgba(255, 255, 255, 0.4) !important;
+  color: rgba(255,255,255,0.4) !important;
   box-shadow: none !important;
   animation: none !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
   font-weight: 400 !important;
   font-size: 1rem !important;
 }
@@ -193,7 +169,7 @@ button::after,
 }
 
 .form-hint {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255,255,255,0.5);
   font-size: 0.95rem;
 }
 
@@ -214,8 +190,8 @@ button::after,
 .field input {
   padding: 0.9rem 1rem;
   border-radius: 14px;
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255,215,0,0.3);
+  background: rgba(255,255,255,0.07);
   color: white;
   font-size: 1rem;
   outline: none;
@@ -223,29 +199,28 @@ button::after,
 }
 
 .field input:focus {
-  border-color: rgba(255, 215, 0, 0.8);
-  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255,215,0,0.8);
+  background: rgba(255,255,255,0.1);
 }
 
 .field input::placeholder {
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255,255,255,0.3);
 }
 
 .field-note {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255,255,255,0.4);
 }
 
-/* Триггер пикера */
 .picker-trigger {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.9rem 1rem;
   border-radius: 14px;
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  background: rgba(255, 255, 255, 0.07);
-  color: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255,215,0,0.3);
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.35);
   font-size: 1rem;
   cursor: pointer;
 }
@@ -261,12 +236,11 @@ button::after,
 /* ============================================================
    БАРАБАН (PICKER)
    ============================================================ */
-
 .picker-overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0,0,0,0.65);
   z-index: 200;
   align-items: flex-end;
 }
@@ -279,7 +253,7 @@ button::after,
   width: 100%;
   background: #1a1030;
   border-radius: 20px 20px 0 0;
-  border-top: 1px solid rgba(255, 215, 0, 0.25);
+  border-top: 1px solid rgba(255,215,0,0.25);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
@@ -288,7 +262,7 @@ button::after,
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   gap: 0.5rem;
 }
 
@@ -315,12 +289,6 @@ button::after,
   flex-shrink: 0;
 }
 
-.picker-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: white;
-}
-
 .picker-body {
   display: flex;
   position: relative;
@@ -328,7 +296,6 @@ button::after,
   overflow: hidden;
 }
 
-/* Линии выделения центрального элемента */
 .picker-highlight {
   position: absolute;
   left: 0;
@@ -336,8 +303,8 @@ button::after,
   top: 50%;
   transform: translateY(-50%);
   height: 44px;
-  border-top: 1px solid rgba(255, 215, 0, 0.5);
-  border-bottom: 1px solid rgba(255, 215, 0, 0.5);
+  border-top: 1px solid rgba(255,215,0,0.5);
+  border-bottom: 1px solid rgba(255,215,0,0.5);
   pointer-events: none;
   z-index: 2;
 }
@@ -359,7 +326,7 @@ button::after,
   height: 44px;
   line-height: 44px;
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255,255,255,0.3);
   scroll-snap-align: center;
   transition: color 0.15s, font-size 0.15s;
   cursor: pointer;
@@ -402,16 +369,15 @@ button::after,
 
 .result-type-badge {
   display: inline-block;
-  background: rgba(255, 215, 0, 0.15);
+  background: rgba(255,215,0,0.15);
   color: #ffd700;
-  border: 1px solid rgba(255, 215, 0, 0.4);
+  border: 1px solid rgba(255,215,0,0.4);
   padding: 0.3rem 1.2rem;
   border-radius: 50px;
   font-size: 0.95rem;
   font-weight: 600;
 }
 
-/* Сетка карточек */
 .cards-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -420,8 +386,8 @@ button::after,
 }
 
 .info-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 215, 0, 0.2);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,215,0,0.2);
   border-radius: 14px;
   padding: 0.9rem 1rem;
 }
@@ -446,10 +412,9 @@ button::after,
   line-height: 1.4;
 }
 
-/* Рекомендации */
 .recommendations {
-  background: rgba(255, 215, 0, 0.05);
-  border: 1px solid rgba(255, 215, 0, 0.2);
+  background: rgba(255,215,0,0.05);
+  border: 1px solid rgba(255,215,0,0.2);
   border-radius: 16px;
   padding: 1.25rem;
   margin-bottom: 1.5rem;
@@ -480,5 +445,5 @@ button::after,
 .rec-item p {
   font-size: 0.95rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255,255,255,0.85);
 }
