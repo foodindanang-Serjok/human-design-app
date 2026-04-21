@@ -52,6 +52,8 @@ function showResult(name, result) {
   }
 
   document.getElementById('rec-text').innerHTML = html;
+  // Рисуем бодиграф
+  Bodygraph.drawSVG(result);
 }
 
 // ---- Рекомендации по типам ----
