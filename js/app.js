@@ -13,24 +13,32 @@ function calculate() {
   var city = document.getElementById('input-city').value.trim();
 
   // Берём дату и время из барабана
-  var day   = selectedDay;
-  var month = selectedMonth;
-  var year  = selectedYear;
-  var hour  = selectedHour;
-  var min   = selectedMin;
+ var day   = selectedDay;
+var month = selectedMonth;
+var year  = selectedYear;
+var hour  = selectedHour;
+var min   = selectedMin;
 
-  // Проверка
-  if (!day || !month || !year) {
-    alert('Пожалуйста, выбери дату рождения');
-    return;
-  }
+if (!day || !month || !year) {
+  alert('Пожалуйста, выбери дату рождения');
+  return;
+}
 
-  // Собираем дату
-  // Губкин UTC+3, но пользователь вводит местное время
-// Переводим в UTC вычитая смещение часового пояса
-var tzOffset = new Date().getTimezoneOffset(); // в минутах
-var birthDate = new Date(Date.UTC(year, month - 1, day, hour, min, 0));
-birthDate = new Date(birthDate.getTime() + tzOffset * 60 * 1000);
+// Пользователь вводит МЕСТНОЕ время рождения
+// Нужно перевести в UTC: вычитаем текущее смещение браузера
+// Это работает правильно если пользователь находится
+// в том же часовом поясе где родился
+var localOffset = new Date().getTimezoneOffset(); // минуты до UTC
+var birthDate = new Date(year, month - 1, day, hour, min, 0);
+// Корректируем: создаём UTC дату с учётом локального времени
+var birthUTC = new Date(Date.UTC(
+  birthDate.getFullYear(),
+  birthDate.getMonth(),
+  birthDate.getDate(),
+  birthDate.getHours() + (localOffset / 60),
+  birthDate.getMinutes()
+));
+var birthDate = birthUTC;
 
   // Запускаем расчёт Human Design
   var result = Bodygraph.calculate(birthDate);
