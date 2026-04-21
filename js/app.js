@@ -35,6 +35,8 @@ async function calculate() {
 var utcDate = new Date(Date.UTC(selectedYear, selectedMonth-1, selectedDay, selectedHour, selectedMin, 0));
 
     var result = Bodygraph.calculate(utcDate);
+    console.log('Активные центры:', JSON.stringify(result.activeCenters));
+console.log('Активные ворота:', Array.from(result.activeGates).sort((a,b)=>a-b).join(', '));
     showResult(name, result);
     showScreen('screen-result');
   } catch(e) {
