@@ -104,9 +104,18 @@ const Bodygraph = {
   '6/3': 'Ролевая модель / Мученик'
 };
 
-    const key = persLine + '/' + desLine;
-    const name = profiles[key] || 'Профиль ' + key;
-    return { code: key, name: name, persLine: persLine, desLine: desLine };
+    const LINES = {
+  1: 'Исследователь',
+  2: 'Отшельник',
+  3: 'Мученик',
+  4: 'Оппортунист',
+  5: 'Еретик',
+  6: 'Ролевая модель'
+};
+
+const key = persLine + '/' + desLine;
+const name = profiles[key] || (LINES[persLine] + ' / ' + LINES[desLine]);
+return { code: key, name: name, persLine: persLine, desLine: desLine };
   },
   // ---- Уточнить авторитет по активным центрам ----
   getAuthority: function(activeCenters) {
