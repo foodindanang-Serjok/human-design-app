@@ -9,6 +9,9 @@
   <meta name="theme-color" content="#0a0818" />
   <title>Твой Дизайн</title>
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
 </head>
 <body>
 
@@ -60,6 +63,12 @@
     </div>
   </div>
 
+  <!-- СПИННЕР -->
+  <div id="spinner" style="display:none;position:fixed;inset:0;background:rgba(10,8,24,0.92);z-index:500;flex-direction:column;align-items:center;justify-content:center;gap:1rem;">
+    <div style="width:52px;height:52px;border:3px solid rgba(255,215,0,0.15);border-top-color:#ffd700;border-radius:50%;animation:spin 0.9s linear infinite;"></div>
+    <p style="color:rgba(255,255,255,0.6);font-family:sans-serif;font-size:1rem;">Рассчитываем карту...</p>
+  </div>
+
   <!-- ЭКРАН 3: Результат -->
   <div id="screen-result">
     <div class="result-wrap">
@@ -89,7 +98,6 @@
         <div id="rec-text"></div>
       </div>
 
-      <!-- Бодиграф — в самом низу -->
       <div class="bodygraph-section">
         <div class="section-title">Карта Дизайна</div>
         <svg id="bodygraph-svg" viewBox="0 0 360 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;border-radius:0 0 16px 16px;"></svg>
