@@ -43,11 +43,15 @@ const Bodygraph = {
   },
 
   getActiveGates: function(pg, dg) {
-    const a = new Set();
-    for (const p of Object.values(pg)) a.add(p.gate);
-    for (const p of Object.values(dg)) a.add(p.gate);
-    return a;
-  },
+  const a = new Set();
+  // Узлы Луны не определяют центры — исключаем nnode и snode
+  const skip = new Set(['nnode', 'snode']);
+  for (const [name, p] of Object.entries(pg))
+    if (!skip.has(name)) a.add(p.gate);
+  for (const [name, p] of Object.entries(dg))
+    if (!skip.has(name)) a.add(p.gate);
+  return a;
+},
 
   getActiveCenters: function(ag) {
     // Центр определён только если в нём есть ворота из ПОЛНОГО канала
