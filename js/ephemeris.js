@@ -1,60 +1,74 @@
 // ============================================================
-// ephemeris.js — расчёт позиций планет через таблицу эфемерид
-// Данные: planets_table.js (1920-2050, шаг 1 день, точность 0.1°)
+// ephemeris.js — расчёт позиций планет для Human Design
+// Порядок планет HD: Солнце, Земля, Луна, Сев.Узел, Юж.Узел,
+//                   Меркурий, Венера, Марс, Юпитер, Сатурн,
+//                   Уран, Нептун, Плутон
 // ============================================================
 
 const Ephemeris = {
 
-  // Инициализация — просто заглушка для совместимости
   init: async function() { return; },
 
   norm360: function(a) { return ((a % 360) + 360) % 360; },
 
-  // Получить позиции всех планет по дате
+  // Северный узел Луны
+  northNode: function(jd) {
+    const T = (jd - 2451545) / 36525;
+    return this.norm360(125.0445479 - 1934.1362608*T + 0.0020754*T*T);
+  },
+
+  // Все 13 позиций планет HD по дате
   getAllPlanets: function(date) {
-    const jd = this._toJD(date);
+    const jd  = this._toJD(date);
     const idx = this._jdToIdx(jd);
     const frac = (jd - (EPH_START_JD + idx * EPH_STEP)) / EPH_STEP;
 
-    const NAMES = ['sun','moon','mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto'];
-    const result = {};
-
+    // Получаем 10 планет из таблицы (Sun,Moon,Merc,Venus,Mars,Jup,Sat,Ura,Nep,Plu)
+    const raw = {};
+    const KEYS = ['sun','moon','mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto'];
     for (let p = 0; p < 10; p++) {
       let val = ephGet(p, idx);
-      // Линейная интерполяция между днями для точности
       if (idx < EPH_ROWS - 1) {
         const next = ephGet(p, idx + 1);
         let diff = next - val;
-        if (diff > 180) diff -= 360;
+        if (diff >  180) diff -= 360;
         if (diff < -180) diff += 360;
         val = this.norm360(val + diff * frac);
       }
-      result[NAMES[p]] = val;
+      raw[KEYS[p]] = val;
     }
-    return result;
+
+    // Добавляем Землю и Узлы
+    const nn = this.northNode(jd);
+    return {
+      sun:     raw.sun,
+      earth:   this.norm360(raw.sun + 180),
+      moon:    raw.moon,
+      nnode:   nn,
+      snode:   this.norm360(nn + 180),
+      mercury: raw.mercury,
+      venus:   raw.venus,
+      mars:    raw.mars,
+      jupiter: raw.jupiter,
+      saturn:  raw.saturn,
+      uranus:  raw.uranus,
+      neptune: raw.neptune,
+      pluto:   raw.pluto
+    };
   },
 
-  // Юлианский день
   _toJD: function(date) {
-    let y = date.getUTCFullYear();
-    let m = date.getUTCMonth() + 1;
-    const d = date.getUTCDate();
-    const h = date.getUTCHours() + date.getUTCMinutes() / 60;
+    let y = date.getUTCFullYear(), m = date.getUTCMonth()+1;
+    const d = date.getUTCDate(), h = date.getUTCHours() + date.getUTCMinutes()/60;
     if (m <= 2) { y--; m += 12; }
-    const A = Math.floor(y / 100);
-    const B = 2 - A + Math.floor(A / 4);
-    return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + h / 24 + B - 1524.5;
+    const A = Math.floor(y/100), B = 2-A+Math.floor(A/4);
+    return Math.floor(365.25*(y+4716)) + Math.floor(30.6001*(m+1)) + d + h/24 + B - 1524.5;
   },
 
-  // Индекс в таблице
   _jdToIdx: function(jd) {
-    const idx = Math.floor((jd - EPH_START_JD) / EPH_STEP);
-    return Math.max(0, Math.min(idx, EPH_ROWS - 2));
+    return Math.max(0, Math.min(Math.floor((jd - EPH_START_JD) / EPH_STEP), EPH_ROWS - 2));
   },
 
-  // ============================================================
-  // Точная таблица ворот HD по градусам зодиака
-  // ============================================================
   GATE_TABLE: [
     [17,3.875],[21,9.5],[51,15.125],[42,20.75],[3,26.375],
     [27,32],[24,37.625],[2,43.25],[23,48.875],[8,54.5],
@@ -75,7 +89,7 @@ const Ephemeris = {
     const lon = this.norm360(longitude);
     const table = this.GATE_TABLE;
     let idx = table.length - 1;
-    for (let i = 0; i < table.length - 1; i++) {
+    for (let i = 0; i < table.length-1; i++) {
       if (lon >= table[i][1] && lon < table[i+1][1]) { idx = i; break; }
     }
     if (lon >= 358.25 || lon < 3.875) idx = table.length - 1;
@@ -93,18 +107,13 @@ const Ephemeris = {
     return result;
   },
 
-  // Дата дизайна = Солнце на 88° раньше
   getDesignDate: function(birthDate) {
-    const birthPlanets = this.getAllPlanets(birthDate);
-    const birthSun = birthPlanets.sun;
+    const birthSun  = this.getAllPlanets(birthDate).sun;
     const targetSun = this.norm360(birthSun - 88);
-
-    // Бинарный поиск
-    let lo = new Date(birthDate.getTime() - 95 * 86400000);
-    let hi = new Date(birthDate.getTime() - 80 * 86400000);
-
-    for (let i = 0; i < 50; i++) {
-      const mid = new Date((lo.getTime() + hi.getTime()) / 2);
+    let lo = new Date(birthDate.getTime() - 95*86400000);
+    let hi = new Date(birthDate.getTime() - 80*86400000);
+    for (let i = 0; i < 60; i++) {
+      const mid    = new Date((lo.getTime() + hi.getTime()) / 2);
       const sunMid = this.getAllPlanets(mid).sun;
       let diff = sunMid - targetSun;
       if (diff >  180) diff -= 360;
