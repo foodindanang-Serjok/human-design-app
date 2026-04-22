@@ -245,7 +245,7 @@ const Bodygraph = {
 
     draw('tri-up',   'head',    { cx:180, cy:68,  w:36, h:20 });
     draw('tri-down', 'ajna',    { cx:180, cy:96,  w:36, h:18 });
-    draw('circle',   'throat',  { cx:180, cy:122, r:14  });
+    draw('circle',   'throat',  { cx:180, cy:148, r:14  });
     draw('diamond',  'gCenter', { cx:180, cy:198, w:38, h:28 });
     draw('tri-up',   'will',    { cx:228, cy:188, w:34, h:24 });
     draw('tri-up',   'solar',   { cx:235, cy:248, w:34, h:24 });
